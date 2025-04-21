@@ -52,6 +52,9 @@ export async function createOrder(order: {
   const supabase = createClient()
   const user = await getCurrentUser()
 
+  // Log the user object we received
+  console.log("User object retrieved in createOrder:", user);
+
   // In preview mode or if no user is found, return a mock ID
   if (!user) {
     console.log("No user found, returning mock order ID")
