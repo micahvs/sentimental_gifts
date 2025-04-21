@@ -40,6 +40,8 @@ export async function getUserOrders(userId: string) {
 export async function createOrder(order: {
   productType: string
   inputData: any
+  shipping_address?: any
+  phone_number?: string | null
 }) {
   // Check if we're in preview mode
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -56,6 +58,11 @@ export async function createOrder(order: {
     return `preview-${order.productType}-${Date.now()}`
   }
 
+  console.log(`Creating order for user ${user.id}, product: ${order.productType}`);
+  console.log("Order input data:", JSON.stringify(order.inputData, null, 2));
+  console.log("Shipping Address:", JSON.stringify(order.shipping_address, null, 2));
+  console.log("Phone Number:", order.phone_number);
+
   try {
     const { data, error } = await supabase
       .from("orders")
@@ -64,6 +71,8 @@ export async function createOrder(order: {
           user_id: user.id,
           product_type: order.productType,
           input_data: order.inputData,
+          shipping_address: order.shipping_address,
+          phone_number: order.phone_number,
           status: "processing",
         },
       ])

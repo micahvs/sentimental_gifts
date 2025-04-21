@@ -11,6 +11,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createOrder } from "@/lib/actions"
 import { useToast } from "@/hooks/use-toast"
 import { FileUploader } from "@/components/file-uploader"
+import { Input } from "@/components/ui/input"
+
+const addressSchema = z.object({
+  street: z.string().min(1, "Street address is required."),
+  city: z.string().min(1, "City is required."),
+  state: z.string().min(1, "State/Province is required."),
+  zip: z.string().min(1, "Zip/Postal code is required."),
+  country: z.string().min(1, "Country is required."),
+})
 
 const formSchema = z.object({
   style: z.string({
@@ -19,6 +28,8 @@ const formSchema = z.object({
   photoUrl: z.string().min(1, {
     message: "Please upload a photo.",
   }),
+  shipping_address: addressSchema,
+  phone_number: z.string().optional(),
 })
 
 export default function PortraitForm() {
@@ -31,15 +42,32 @@ export default function PortraitForm() {
     defaultValues: {
       style: "",
       photoUrl: "",
+      shipping_address: {
+        street: "",
+        city: "",
+        state: "",
+        zip: "",
+        country: "",
+      },
+      phone_number: "",
     },
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     try {
+      const inputData = {
+        style: values.style,
+        photoUrl: values.photoUrl,
+      }
+      const shipping_address = values.shipping_address
+      const phone_number = values.phone_number
+
       const orderId = await createOrder({
         productType: "portrait",
-        inputData: values,
+        inputData: inputData,
+        shipping_address: shipping_address,
+        phone_number: phone_number,
       })
 
       toast({
@@ -109,6 +137,94 @@ export default function PortraitForm() {
                 </SelectContent>
               </Select>
               <FormDescription>Choose the artistic style for your portrait.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="space-y-4 rounded-md border p-4">
+          <h3 className="text-lg font-medium">Shipping Address</h3>
+          <FormField
+            control={form.control}
+            name="shipping_address.street"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Street Address</FormLabel>
+                <FormControl>
+                  <Input placeholder="123 Main St" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FormField
+              control={form.control}
+              name="shipping_address.city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>City</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Anytown" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="shipping_address.state"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>State / Province</FormLabel>
+                  <FormControl>
+                    <Input placeholder="CA" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="shipping_address.zip"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Zip / Postal Code</FormLabel>
+                  <FormControl>
+                    <Input placeholder="12345" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <FormField
+            control={form.control}
+            name="shipping_address.country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Country</FormLabel>
+                <FormControl>
+                  <Input placeholder="USA" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="phone_number"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone Number (Optional)</FormLabel>
+              <FormControl>
+                <Input type="tel" placeholder="(555) 123-4567" {...field} />
+              </FormControl>
+              <FormDescription>
+                In case we need to contact you about your order.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
