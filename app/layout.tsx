@@ -15,7 +15,15 @@ export const metadata = {
     description: "Create custom AI-generated songs, portraits, poetry, and children's books for your loved ones.",
     images: [{ url: "/og-image.jpg" }],
   },
-    generator: 'v0.dev'
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  manifest: "/site.webmanifest",
+  generator: 'v0.dev'
 }
 
 export default function RootLayout({
