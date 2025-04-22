@@ -23,6 +23,7 @@ export default async function AdminLayout({
       `Admin access denied. User: ${user?.id || "None"}, Required: ${ADMIN_USER_ID}`,
     );
     redirect("/"); // Redirect non-admins to homepage
+    return null; // Explicitly return null after redirecting
   }
 
   // Admin user, allow access
